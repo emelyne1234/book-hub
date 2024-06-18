@@ -6,7 +6,10 @@ export default class BookController {
   static async getBooks(req: Request, res: Response) {
     try {
       const books: IBook[] = await Book.find()
-        .populate("author")
+        .populate({
+          path: "author",
+          select: "username email",
+        })
         .populate("reviews");
 
       if (!books.length) {
@@ -22,15 +25,10 @@ export default class BookController {
 
   static async createBook(req: Request, res: Response) {
     try {
-      const { error } = validateBookObject(req.body);
-      if (error) {
-        res.status(400).send(error.details[0].message);
-        return;
-      }
-
+      // Extract fields from form data
       const {
         title,
-        author_id,
+        author,
         genre,
         isbn,
         publication_date,
@@ -38,14 +36,12 @@ export default class BookController {
         average_rating,
       } = req.body;
 
-      let cover_image: string | undefined;
-      if (req.file) {
-        cover_image = req.file.path;
-      }
+      const cover_image = req.file ? req.file.path : "uploads/defaultCover.png";
 
+      // Create a new Book instance
       const newBook = new Book({
         title,
-        author: author_id,
+        author,
         genre,
         isbn,
         publication_date,
@@ -54,6 +50,7 @@ export default class BookController {
         average_rating,
       });
 
+      // Save the new book to the database
       await newBook.save();
 
       res.status(201).send({
@@ -75,8 +72,12 @@ export default class BookController {
       }
 
       const book = await Book.findById(id)
-        .populate("author")
+        .populate({
+          path: "author",
+          select: "username email",
+        })
         .populate("reviews");
+
       if (!book) {
         res.status(404).send("Book not found");
         return;
@@ -122,8 +123,12 @@ export default class BookController {
       const updatedBook = await Book.findByIdAndUpdate(id, updatedData, {
         new: true,
       })
-        .populate("author")
+        .populate({
+          path: "author",
+          select: "username email",
+        })
         .populate("reviews");
+
       if (!updatedBook) {
         res.status(404).send("Book not found");
         return;

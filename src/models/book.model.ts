@@ -12,6 +12,7 @@ export interface IBook {
   summary: string;
   cover_image: string;
   average_rating: number;
+  reviews?: Types.ObjectId[];
 }
 
 // Mongoose schema for Book
@@ -25,6 +26,7 @@ const bookSchema: Schema<IBook> = new Schema<IBook>(
     summary: { type: String, maxlength: 1000, required: true },
     cover_image: { type: String, default: "" },
     average_rating: { type: Number, min: 0, max: 5, default: 0 },
+    reviews: [{ type: Types.ObjectId, ref: "Review" }],
   },
   {
     timestamps: true,
@@ -45,6 +47,7 @@ export const validateBookObject = (book: IBook) => {
     summary: Joi.string().max(1000).required(),
     cover_image: Joi.string().optional(),
     average_rating: Joi.number().min(0).max(5).optional(),
+    reviews: Joi.array().items(Joi.string()).optional(),
   });
 
   return schema.validate(book);

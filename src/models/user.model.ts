@@ -29,8 +29,8 @@ const userSchema: Schema<IUser> = new Schema<IUser>(
       default: "reader",
     },
     bio: { type: String, maxlength: 500, default: "" },
-    books: [{ type: Types.ObjectId, ref: "Book" }], // References to books
-    reviews: [{ type: Types.ObjectId, ref: "Review" }], // References to reviews
+    books: [{ type: Types.ObjectId, ref: "Book" }],
+    reviews: [{ type: Types.ObjectId, ref: "Review" }],
   },
   {
     timestamps: true,

@@ -9,6 +9,6 @@ const router = express.Router();
 router.use(userRoutes);
 router.use(bookRoutes);
 router.use(genreRoutes);
-router.use(genreRoutes);
+router.use(reviewRoutes);
 
 export default router;
