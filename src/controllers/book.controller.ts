@@ -8,9 +8,13 @@ export default class BookController {
       const books: IBook[] = await Book.find()
         .populate({
           path: "author",
-          select: "username email",
+          select: "username",
         })
-        .populate("reviews");
+        .populate("reviews")
+        .populate({
+          path: "genre",
+          select: "name",
+        });
 
       if (!books.length) {
         res.status(404).send("No books found");
@@ -25,7 +29,6 @@ export default class BookController {
 
   static async createBook(req: Request, res: Response) {
     try {
-      // Extract fields from form data
       const {
         title,
         author,
@@ -36,7 +39,7 @@ export default class BookController {
         average_rating,
       } = req.body;
 
-      const cover_image = req.file ? req.file.path : "uploads/defaultCover.png";
+      const cover_image = req.file ? req.file.filename : "defaultCover.png";
 
       // Create a new Book instance
       const newBook = new Book({
